@@ -856,6 +856,28 @@
             box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
         }
 
+        .form-status {
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .form-status.success {
+            display: block;
+            color: #BFFFE0;
+            background-color: rgba(37, 211, 102, 0.12);
+            border: 1px solid rgba(37, 211, 102, 0.45);
+        }
+
+        .form-status.error {
+            display: block;
+            color: #FFD3D3;
+            background-color: rgba(255, 80, 80, 0.12);
+            border: 1px solid rgba(255, 80, 80, 0.45);
+        }
+
         @media (max-width: 768px) {
             .contact-container {
                 grid-template-columns: 1fr;
@@ -1217,6 +1239,9 @@
                 <a href="https://wa.me/51913184859?text=Hola%20ADV%20GROUP%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20servicios" class="cta-button" target="_blank" style="margin-top: 1rem; display: inline-block;">💚 Hablar por WhatsApp ahora</a>
             </div>
             <form id="contactForm" method="POST" action="https://formsubmit.co/adv.group.peru@gmail.com" class="contact-form">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_subject" value="Nuevo contacto desde ADV GROUP">
                 <div class="form-group">
                     <label for="name">Nombre</label>
                     <input type="text" id="name" name="name" required>
@@ -1238,6 +1263,7 @@
                     <textarea id="message" name="message" required></textarea>
                 </div>
                 <button type="submit" class="form-submit">Enviar Mensaje</button>
+                <p id="formStatus" class="form-status" aria-live="polite"></p>
             </form>
         </div>
     </section>
@@ -1477,9 +1503,44 @@
         // ===============================================
         // FORMULARIO DE CONTACTO
         // ===============================================
-        // FormSubmit.co se encarga del envío automático
-        // No necesitamos JavaScript para procesar el formulario
-        // Solo actualizamos el estado visual
+        const contactForm = document.getElementById('contactForm');
+        const formStatus = document.getElementById('formStatus');
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitButton = contactForm.querySelector('.form-submit');
+            const originalButtonText = submitButton.textContent;
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+            formStatus.className = 'form-status';
+            formStatus.textContent = '';
+
+            try {
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: new FormData(contactForm),
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('No se pudo enviar el formulario.');
+                }
+
+                formStatus.classList.add('success');
+                formStatus.textContent = 'Su información ha sido enviada satisfactoriamente';
+                contactForm.reset();
+            } catch (error) {
+                formStatus.classList.add('error');
+                formStatus.textContent = 'No se pudo enviar el formulario. Intente nuevamente.';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            }
+        });
 
         // ===============================================
         // EFECTO PARALLAX EN SCROLL
