@@ -1238,7 +1238,7 @@
                 </div>
                 <a href="https://wa.me/51913184859?text=Hola%20ADV%20GROUP%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20servicios" class="cta-button" target="_blank" style="margin-top: 1rem; display: inline-block;">💚 Hablar por WhatsApp ahora</a>
             </div>
-            <form id="contactForm" method="POST" action="https://formsubmit.co/adv.group.peru@gmail.com" class="contact-form">
+            <form id="contactForm" method="POST" action="https://formsubmit.co/ajax/adv.group.peru@gmail.com" class="contact-form">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_subject" value="Nuevo contacto desde ADV GROUP">
@@ -1526,7 +1526,9 @@
                     }
                 });
 
-                if (!response.ok) {
+                const data = await response.json();
+
+                if (!response.ok || data.success === 'false' || data.success === false) {
                     throw new Error('No se pudo enviar el formulario.');
                 }
 
